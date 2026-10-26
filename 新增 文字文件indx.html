@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>每日節日任務 RPG</title>
+<style>
+:root{--bg:#f5f1e9;--paper:#fffdf8;--ink:#39362f;--muted:#847b6d;--line:#e6ddcf;--accent:#79684f;--soft:#eee7dc;--good:#54745b;--danger:#a34c42}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;padding:20px 14px 44px}
+button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #c4a977;outline-offset:2px}
+.app{max-width:760px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.brand{font-size:23px;font-weight:800}.small{font-size:13px;color:var(--muted)}.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:15px;box-shadow:0 4px 14px #3d2c1607}.hidden{display:none!important}.eyebrow{font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:700;margin-bottom:8px}.title{font-size:23px;font-weight:800;margin:4px 0 8px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row>*{min-width:0}.grow{flex:1}.btn{border:0;border-radius:11px;padding:12px 15px;background:var(--accent);color:white;font-weight:700}.btn.secondary{background:var(--soft);color:var(--ink);border:1px solid var(--line)}.btn.danger{background:#f6e8e5;color:var(--danger);border:1px solid #e7c7c1}.btn:disabled{opacity:.45;cursor:not-allowed}.input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);margin:5px 0 12px}.field-label{font-size:13px;font-weight:700}.auth-wrap{max-width:460px;margin:7vh auto}.tabs{display:flex;gap:8px;margin-bottom:18px}.tabs button{flex:1}.notice{font-size:13px;line-height:1.7;padding:11px 12px;background:#f4efe6;border-radius:10px;color:#706453}.error{color:var(--danger);font-size:13px;min-height:20px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.stat{padding:12px 8px;border-radius:13px;background:#f4efe7;text-align:center}.stat strong{display:block;font-size:22px}.stat span{font-size:12px;color:var(--muted)}.card-hero{text-align:center;padding:16px 6px 8px}.emoji{font-size:52px}.pair{color:var(--muted);line-height:1.7}.progress-line{height:9px;background:var(--soft);border-radius:20px;overflow:hidden;margin:10px 0}.progress-bar{height:100%;width:0;background:#9b8a6e;transition:width .25s}.task{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:flex-start;cursor:pointer}.task:last-child{border-bottom:0}.task input{width:19px;height:19px;margin-top:3px;accent-color:var(--accent);flex-shrink:0}.task-title{font-weight:700}.task-desc{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.6}.task input:checked+.task-body .task-title{text-decoration:line-through;color:#a49b8f}.task-badge{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:3px 7px;margin-left:6px;white-space:nowrap}.history-item{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.history-item:last-child{border-bottom:0}.history-item small{display:block;color:var(--muted);margin-top:4px}.pill{display:inline-block;padding:5px 9px;background:var(--soft);border-radius:99px;font-size:12px}.footer{text-align:center;color:#9a9185;font-size:12px;line-height:1.7;margin:20px auto;max-width:560px}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.top{align-items:flex-start}.brand{font-size:20px}.panel{padding:16px}.title{font-size:21px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div id="authView" class="auth-wrap">
+    <div class="panel">
+      <div class="eyebrow">YOUR LITTLE LIFE RPG</div>
+      <div class="title">🃏 每日節日任務</div>
+      <p class="small">建立自己的帳號，記錄每日抽牌、任務進度與冒險紀錄。</p>
+      <div class="tabs">
+        <button class="btn" id="showLogin">登入</button>
+        <button class="btn secondary" id="showRegister">註冊帳號</button>
+      </div>
+      <form id="authForm">
+        <label class="field-label" for="username">帳號名稱</label>
+        <input class="input" id="username" autocomplete="username" required minlength="3" maxlength="24" placeholder="至少 3 個字元">
+        <div id="emailWrap" class="hidden">
+          <label class="field-label" for="email">電子郵件（選填）</label>
+          <input class="input" id="email" type="email" autocomplete="email" placeholder="可留空">
+        </div>
+        <label class="field-label" for="password">密碼</label>
+        <input class="input" id="password" type="password" autocomplete="current-password" required minlength="8" placeholder="至少 8 個字元">
+        <div id="confirmWrap" class="hidden">
+          <label class="field-label" for="confirmPassword">確認密碼</label>
+          <input class="input" id="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="再輸入一次密碼">
+        </div>
+        <button class="btn" id="authSubmit" type="submit" style="width:100%">登入</button>
+        <div id="authError" class="error" role="alert" style="margin-top:10px"></div>
+      </form>
+      <div class="notice">重要：這是<strong>單一瀏覽器的本機版本</strong>。帳號資料保存在此裝置的瀏覽器中，無法跨裝置同步，也不適合存放重要或重複使用的密碼。清除瀏覽器資料可能導致紀錄遺失。</div>
+    </div>
+  </div>
+
+  <div id="gameView" class="hidden">
+    <header class="top">
+      <div><div class="brand">☀️ 每日節日任務</div><div class="small" id="todayLabel"></div></div>
+      <div class="row"><span class="pill" id="userPill"></span><button class="btn secondary" id="logoutButton">登出</button></div>
+    </header>
+
+    <section class="panel">
+      <div class="eyebrow">PLAYER STATUS · 玩家狀態</div>
+      <div class="stats">
+        <div class="stat"><strong id="levelStat">1</strong><span>等級</span></div>
+        <div class="stat"><strong id="xpStat">0</strong><span>經驗值 XP</span></div>
+        <div class="stat"><strong id="streakStat">0</strong><span>連續登入天數</span></div>
+        <div class="stat"><strong id="doneStat">0</strong><span>累計完成任務</span></div>
+      </div>
+      <div class="progress-line"><div class="progress-bar" id="xpBar"></div></div>
+      <div class="small" id="xpHint">再完成任務，累積經驗值升級。</div>
+    </section>
+
+    <section class="panel">
+      <div class="eyebrow">DAILY DRAW · 每日抽卡</div>
+      <div id="drawIntro">抽一張牌，決定今天的生活主題。每天只能建立一份今日紀錄；如果已抽過，會載入今天的牌。</div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn grow" id="drawButton">🃏 抽取今日節日牌</button>
+        <button class="btn secondary" id="resetTodayButton" title="重新設定今日任務">重新抽牌</button>
+      </div>
+      <div id="cardResult" class="card-hero hidden" aria-live="polite">
+        <div class="emoji" id="cardEmoji"></div><div class="title" id="cardName"></div><div class="pair" id="cardPair"></div>
+        <div class="notice" id="specialMessage" style="margin-top:12px"></div>
+      </div>
+      <div id="chooseArea" class="hidden" style="margin-top:14px">
+        <label class="field-label" for="cardSelect">魔術師：選擇今日節日牌</label>
+        <select id="cardSelect" class="input"></select>
+        <button class="btn" id="confirmChoose" style="width:100%">確認選牌</button>
+      </div>
+    </section>
+
+    <section id="taskSection" class="panel hidden">
+      <div class="eyebrow">TODAY'S QUEST · 今日任務</div>
+      <div class="row" style="justify-content:space-between"><strong>今日進度</strong><strong id="progressText">0 / 3</strong></div>
+      <div class="progress-line"><div class="progress-bar" id="progressBar"></div></div>
+      <div id="taskList"></div>
+      <div class="notice" id="taskMessage" aria-live="polite">一步一步完成就好。</div>
+    </section>
+
+    <section id="rewardSection" class="panel hidden">
+      <div class="eyebrow">DAILY REWARD · 今日獎勵</div>
+      <div class="row"><div style="font-size:34px">🎁</div><div class="grow"><strong id="rewardTitle">今日獎勵</strong><div class="small" id="rewardDesc"></div></div></div>
+      <div class="small" style="margin-top:10px">獎勵是給自己的生活留一點空間，不必靠完美表現才值得休息。</div>
+    </section>
+
+    <section class="panel">
+      <div class="row" style="justify-content:space-between"><div><div class="eyebrow">JOURNAL · 冒險紀錄</div><strong>過往每日紀錄</strong></div><button class="btn secondary" id="exportButton">匯出 JSON</button></div>
+      <div id="historyList" style="margin-top:8px"></div>
+      <div class="small" style="margin-top:10px">匯出的檔案可用來備份；本機版本不會自動上傳雲端。</div>
+    </section>
+
+    <section class="panel">
+      <div class="eyebrow">SPECIAL CARDS · 特殊牌規則</div>
+      <div style="line-height:2">🎡 <strong>命運之輪</strong>：重新抽一張節日牌。<br>🪄 <strong>魔術師</strong>：自行選擇節日牌。<br>🔁 <strong>重複昨日</strong>：沿用上一個有紀錄的節日主題。</div>
+      <div class="small">抽到特殊牌不會直接取代你的日常任務；完成抽牌效果後才會生成任務。</div>
+    </section>
+
+    <section class="panel">
+      <div class="eyebrow">ACCOUNT · 帳號資料</div>
+      <div class="small">目前帳號的所有紀錄儲存在此瀏覽器。請定期匯出備份。</div>
+      <button class="btn danger" id="deleteAccountButton" style="margin-top:12px">刪除此裝置上的帳號與紀錄</button>
+    </section>
+  </div>
+
+  <div class="footer">生活不是待辦清單的總和。完成任務是成就，休息與享受也同樣算數。<br>本版本使用瀏覽器本機儲存，不是具備雲端驗證的正式帳號系統。</div>
+</main>
+
+<script>
+"use strict";
+
+const DB_KEY = "dailyFestivalRPG_v2";
+const SESSION_KEY = "dailyFestivalRPG_session";
+const cards = [
+ {id:"sun",emoji:"☀️",name:"太陽",pair:"🧋 手搖日 × 📚 讀書日",reward:"手搖飲時間",rewardDesc:"喝一杯喜歡的飲料，享受短暫休息。",tasks:[["📚 主線：專心讀書 30 分鐘","選一個小範圍完成即可。"],["📝 支線：整理一個重點","留下今天學到的內容。"],["🧋 享受：喝一杯喜歡的飲料","選擇喜歡的口味。"]]},
+ {id:"moon",emoji:"🌙",name:"月亮",pair:"🎬 電影日 × 🇬🇧 英文日",reward:"電影與影集時間",rewardDesc:"安心享受喜歡的故事。",tasks:[["🇬🇧 主線：接觸英文 15 分鐘","聽音檔或看一段英文影片。"],["📝 支線：記下 3 個英文單字","有趣片語也可以。"],["🎬 享受：看電影或影集","挑一部今天想看的作品。"]]},
+ {id:"strength",emoji:"💪",name:"力量",pair:"🍔 美食日 × 🏃 運動日",reward:"美食享受時間",rewardDesc:"享用喜歡的餐點，不必用運動交換食物。",tasks:[["🏃 主線：活動身體 15 分鐘","散步、伸展或其他喜歡的活動。"],["💧 支線：補充水分","依照自己的需要喝水。"],["🍔 享受：享用喜歡的食物","好好吃一頓喜歡的餐點。"]]},
+ {id:"fool",emoji:"🃏",name:"愚人",pair:"🎮 遊戲日 × ✍️ 創作日",reward:"自由遊戲時間",rewardDesc:"今天的故事由你決定。",tasks:[["✍️ 主線：創作 20 分鐘","小說、設定或任何想寫的內容。"],["💡 支線：留下 3 個靈感","不必立刻寫成完整作品。"],["🎮 享受：玩喜歡的遊戲","單純享受遊戲也很好。"]]},
+ {id:"lovers",emoji:"💕",name:"戀人",pair:"🛁 美容日 × 🥗 健康日",reward:"專屬放鬆時間",rewardDesc:"留一段不必趕路的時光。",tasks:[["🛁 主線：完成一項自我照顧","洗澡、保養或整理頭髮。"],["🥗 支線：好好吃一餐","正常吃飯，照顧身體。"],["🌿 享受：留一段放鬆時間","聽音樂、休息或做喜歡的事。"]]},
+ {id:"emperor",emoji:"👑",name:"皇帝",pair:"🛍️ 下單日 × 🧹 整理日",reward:"自由安排的小確幸",rewardDesc:"讓生活空間與心情都舒展一點。",tasks:[["🧹 主線：整理一小個區域","桌面、抽屜或書包都可以。"],["🛍️ 支線：檢查購物清單","看看預算與需求，不必一定購物。"],["✨ 享受：安排一項小享受","逛喜歡的商店或欣賞心儀物品。"]]},
+ {id:"world",emoji:"🌍",name:"世界",pair:"🚶 出門日 × 🌙 早睡日",reward:"自在的外出時光",rewardDesc:"看看日常之外的風景。",tasks:[["🚶 主線：出門走走","散步、逛街或到戶外透透氣。"],["🎒 支線：準備明天要用的東西","幾分鐘就可以。"],["🌙 享受：為睡眠預留時間","安排適合自己的休息時間。"]]},
+ {id:"justice",emoji:"⚖️",name:"正義",pair:"📜 回顧日 × 📝 複習日",reward:"自由休息時間",rewardDesc:"整理過去，也為自己留白。",tasks:[["📝 主線：複習一小段舊內容","挑一個想重新理解的重點。"],["📜 支線：回顧今天","寫下完成的事或值得記住的瞬間。"],["🌿 享受：安排休息時間","讓今天從容地結束。"]]}
+];
+const special = [
+ {id:"wheel",emoji:"🎡",name:"命運之輪"},
+ {id:"magician",emoji:"🪄",name:"魔術師"},
+ {id:"repeat",emoji:"🔁",name:"重複昨日"}
+];
+
+let authMode = "login";
+let activeUser = null;
+let appData = loadDB();
+let pendingChoice = false;
+
+function loadDB(){
+  try { const raw=localStorage.getItem(DB_KEY); return raw?JSON.parse(raw):{users:{}}; }
+  catch(e){ return {users:{}}; }
+}
+function saveDB(){ localStorage.setItem(DB_KEY,JSON.stringify(appData)); }
+function todayKey(date=new Date()){
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+}
+function shiftDate(key,delta){
+  const [y,m,d]=key.split("-").map(Number);
+  const dt=new Date(y,m-1,d); dt.setDate(dt.getDate()+delta); return todayKey(dt);
+}
+function userData(){ return appData.users[activeUser]; }
+function daily(){ return userData().days[todayKey()] || null; }
+function $(id){ return document.getElementById(id); }
+function show(el,on=true){ $(el).classList.toggle("hidden",!on); }
+function randomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function escapeText(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+async function hashPassword(password, saltHex){
+  const enc=new TextEncoder();
+  const salt=saltHex?hexToBytes(saltHex):crypto.getRandomValues(new Uint8Array(16));
+  const key=await crypto.subtle.importKey("raw",enc.encode(password),"PBKDF2",false,["deriveBits"]);
+  const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt,iterations:150000,hash:"SHA-256"},key,256);
+  return {salt:bytesToHex(salt),hash:bytesToHex(new Uint8Array(bits))};
+}
+function bytesToHex(bytes){ return [...bytes].map(b=>b.toString(16).padStart(2,"0")).join(""); }
+function hexToBytes(hex){ const a=new Uint8Array(hex.length/2); for(let i=0;i<a.length;i++)a[i]=parseInt(hex.substr(i*2,2),16);return a; }
+
+function setAuthMode(mode){
+  authMode=mode;
+  $("showLogin").className=mode==="login"?"btn":"btn secondary";
+  $("showRegister").className=mode==="register"?"btn":"btn secondary";
+  show("emailWrap",mode==="register"); show("confirmWrap",mode==="register");
+  $("authSubmit").textContent=mode==="login"?"登入":"建立帳號";
+  $("password").autocomplete=mode==="login"?"current-password":"new-password";
+  $("authError").textContent="";
+}
+$("showLogin").addEventListener("click",()=>setAuthMode("login"));
+$("showRegister").addEventListener("click",()=>setAuthMode("register"));
+
+$("authForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=$("username").value.trim();
+  const password=$("password").value;
+  const error=$("authError");
+  error.textContent="";
+  if(!/^[\p{L}\p{N}_-]{3,24}$/u.test(name)){error.textContent="帳號請使用 3–24 個中文字、英文字母、數字、底線或連字號。";return;}
+  if(password.length<8){error.textContent="密碼至少需要 8 個字元。";return;}
+  const key=name.toLocaleLowerCase();
+  try{
+    if(authMode==="register"){
+      if(password!==$("confirmPassword").value){error.textContent="兩次輸入的密碼不一致。";return;}
+      if(appData.users[key]){error.textContent="這個帳號已存在，請換一個名稱或直接登入。";return;}
+      const hashed=await hashPassword(password);
+      appData.users[key]={username:name,email:$("email").value.trim(),salt:hashed.salt,passwordHash:hashed.hash,createdAt:new Date().toISOString(),xp:0,totalCompleted:0,days:{},lastVisit:null,streak:0};
+      saveDB();
+    }else{
+      const u=appData.users[key];
+      if(!u){error.textContent="找不到這個帳號，請確認名稱或先註冊。";return;}
+      const hashed=await hashPassword(password,u.salt);
+      if(hashed.hash!==u.passwordHash){error.textContent="密碼不正確。";return;}
+    }
+    activeUser=key; localStorage.setItem(SESSION_KEY,key);
+    updateStreak(); enterGame();
+  }catch(err){error.textContent="目前瀏覽器無法完成安全雜湊，請改用最新版瀏覽器並在 localhost 或 HTTPS 開啟。";}
+});
+
+function updateStreak(){
+  const u=userData(), today=todayKey(), last=u.lastVisit;
+  if(last!==today){
+    u.streak=last===shiftDate(today,-1)?(u.streak||0)+1:1;
+    u.lastVisit=today; saveDB();
+  }
+}
+function enterGame(){
+  show("authView",false);show("gameView",true);
+  $("userPill").textContent="👤 "+userData().username;
+  $("todayLabel").textContent=new Date().toLocaleDateString("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+  populateSelect(); renderStats(); renderHistory();
+  const record=daily();
+  if(record){renderDay(record);$("drawIntro").textContent="今天已經抽過牌，正在顯示今日紀錄。";}
+  else{hideDay();$("drawIntro").textContent="抽一張牌，決定今天的生活主題。每天一份紀錄；若抽到特殊牌，照牌面效果繼續。";}
+}
+function logout(){
+  activeUser=null;localStorage.removeItem(SESSION_KEY);
+  show("gameView",false);show("authView",true);
+  $("authForm").reset();setAuthMode("login");
+}
+$("logoutButton").addEventListener("click",logout);
+
+function populateSelect(){
+  $("cardSelect").replaceChildren();
+  cards.forEach((c,i)=>{const o=document.createElement("option");o.value=c.id;o.textContent=`${c.emoji} ${c.name}｜${c.pair}`;$("cardSelect").append(o);});
+}
+function makeRecord(card,drawnSpecial=null){
+  const key=todayKey();
+  const record={date:key,cardId:card.id,drawnSpecial,completed:[],tasks:card.tasks.map(t=>({title:t[0],desc:t[1]})),reward:card.reward,rewardDesc:card.rewardDesc,completedAt:null,xpAwarded:false};
+  userData().days[key]=record;saveDB();renderDay(record);
+}
+function cardById(id){return cards.find(c=>c.id===id);}
+function hideDay(){show("cardResult",false);show("taskSection",false);show("rewardSection",false);show("chooseArea",false);}
+function renderDay(record){
+  const card=cardById(record.cardId);if(!card)return;
+  show("cardResult",true);show("taskSection",true);show("rewardSection",true);show("chooseArea",false);
+  $("cardEmoji").textContent=card.emoji;$("cardName").textContent=card.name;$("cardPair").textContent=card.pair;
+  $("specialMessage").textContent=record.drawnSpecial?`特殊牌：${record.drawnSpecial}。已套用抽牌效果。`:"今日節日牌已記錄。";
+  $("rewardTitle").textContent=record.reward;$("rewardDesc").textContent=record.rewardDesc;
+  const list=$("taskList");list.replaceChildren();
+  record.tasks.forEach((t,i)=>{
+    const label=document.createElement("label");label.className="task";
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=record.completed.includes(i);cb.addEventListener("change",()=>toggleTask(i,cb.checked));
+    const body=document.createElement("span");body.className="task-body";
+    const title=document.createElement("span");title.className="task-title";title.textContent=t.title;
+    const desc=document.createElement("div");desc.className="task-desc";desc.textContent=t.desc;
+    body.append(title,desc);label.append(cb,body);list.append(label);
+  });
+  updateProgress(record);$("drawButton").textContent="✓ 今日已抽牌";
+  $("drawButton").disabled=true;$("resetTodayButton").disabled=false;
+}
+function updateProgress(record){
+  const total=record.tasks.length,done=record.completed.length;
+  $("progressText").textContent=`${done} / ${total} 完成`;
+  $("progressBar").style.width=`${total?done/total*100:0}%`;
+  $("taskMessage").textContent=done===total?"🎉 今日任務全部完成！經驗值已記錄，恭喜通關。":done>0?`✨ 已完成 ${done} 項，剩下 ${total-done} 項。照自己的步調前進。`:"冒險開始了！完成任務後勾選它，系統會自動記錄。";
+}
+function toggleTask(index,checked){
+  const record=daily();if(!record)return;
+  const before=record.completed.includes(index);
+  if(checked&&!before){
+    record.completed.push(index);userData().totalCompleted++;
+    userData().xp+=20;
+  }else if(!checked&&before){
+    record.completed=record.completed.filter(i=>i!==index);
+    userData().totalCompleted=Math.max(0,userData().totalCompleted-1);
+    userData().xp=Math.max(0,userData().xp-20);
+  }
+  record.completed.sort((a,b)=>a-b);
+  if(record.completed.length===record.tasks.length&&!record.xpAwarded){
+    userData().xp+=30;record.xpAwarded=true;record.completedAt=new Date().toISOString();
+  }else if(record.completed.length!==record.tasks.length&&record.xpAwarded){
+    userData().xp=Math.max(0,userData().xp-30);record.xpAwarded=false;record.completedAt=null;
+  }
+  saveDB();updateProgress(record);renderStats();renderHistory();
+}
+function renderStats(){
+  const u=userData(),level=Math.floor(u.xp/100)+1,within=u.xp%100;
+  $("levelStat").textContent=level;$("xpStat").textContent=u.xp;$("streakStat").textContent=u.streak||0;$("doneStat").textContent=u.totalCompleted||0;
+  $("xpBar").style.width=within+"%";$("xpHint").textContent=`距離等級 ${level+1} 還差 ${100-within} XP（每 100 XP 升一級）`;
+}
+function renderHistory(){
+  const entries=Object.values(userData().days).sort((a,b)=>b.date.localeCompare(a.date));
+  const host=$("historyList");host.replaceChildren();
+  if(!entries.length){host.textContent="還沒有冒險紀錄。今天抽一張牌，開始建立你的日誌吧。";host.className="small";return;}
+  host.className="";
+  entries.slice(0,30).forEach(r=>{
+    const c=cardById(r.cardId);const item=document.createElement("div");item.className="history-item";
+    const left=document.createElement("div");left.textContent=`${c?c.emoji:"🃏"} ${r.date}｜${c?c.name:"未知牌"}`;
+    const small=document.createElement("small");small.textContent=c?c.pair:"";left.append(small);
+    const right=document.createElement("div");right.style.textAlign="right";right.textContent=`${r.completed.length}/${r.tasks.length}`;
+    const tag=document.createElement("small");tag.textContent=r.completed.length===r.tasks.length?"已通關":"進行中";right.append(tag);
+    item.append(left,right);host.append(item);
+  });
+}
+function drawFlow(){
+  const pool=[...cards,...special];
+  let drawn=randomItem(pool);
+  while(drawn.id==="repeat"&&!getPreviousRecord()){drawn=randomItem(pool);}
+  if(drawn.id==="wheel"){
+    $("cardEmoji").textContent="🎡";$("cardName").textContent="命運之輪";$("cardPair").textContent="命運轉動，再抽一次。";
+    show("cardResult",true);show("chooseArea",false);
+    const second=randomItem(cards);makeRecord(second,"命運之輪 → "+second.name);return;
+  }
+  if(drawn.id==="magician"){
+    $("cardEmoji").textContent="🪄";$("cardName").textContent="魔術師";$("cardPair").textContent="選擇權交給你。";
+    $("specialMessage").textContent="請從下方選擇今天想過的節日。";show("cardResult",true);show("chooseArea",true);pendingChoice=true;return;
+  }
+  if(drawn.id==="repeat"){
+    const prev=getPreviousRecord(),c=cardById(prev.cardId);
+    makeRecord(c,"重複昨日");return;
+  }
+  makeRecord(drawn,null);
+}
+function getPreviousRecord(){
+  const days=userData().days;
+  return Object.keys(days).filter(k=>k<todayKey()).sort().reverse().map(k=>days[k])[0]||null;
+}
+$("drawButton").addEventListener("click",()=>{
+  if(daily())return;
+  $("drawButton").disabled=true;
+  drawFlow();
+  if(!pendingChoice)$("drawButton").disabled=true;
+  else $("drawButton").disabled=false;
+});
+$("confirmChoose").addEventListener("click",()=>{
+  if(!pendingChoice)return;
+  const card=cardById($("cardSelect").value);if(!card)return;
+  pendingChoice=false;makeRecord(card,"魔術師 → 自行選牌");
+});
+$("resetTodayButton").addEventListener("click",()=>{
+  if(!confirm("重新抽牌會刪除今天的任務勾選紀錄，確定繼續嗎？"))return;
+  const rec=daily();
+  if(rec){
+    // Reverse XP credited by the current day's tasks before replacing the record.
+    const u=userData();u.xp=Math.max(0,u.xp-rec.completed.length*20-(rec.xpAwarded?30:0));
+    u.totalCompleted=Math.max(0,u.totalCompleted-rec.completed.length);
+    delete u.days[todayKey()];saveDB();
+  }
+  pendingChoice=false;$("drawButton").disabled=false;$("drawButton").textContent="🃏 抽取今日節日牌";
+  hideDay();$("drawIntro").textContent="重新抽牌：抽取今天的新節日主題。";
+});
+$("exportButton").addEventListener("click",()=>{
+  const payload={exportedAt:new Date().toISOString(),username:userData().username,profile:{createdAt:userData().createdAt,xp:userData().xp,totalCompleted:userData().totalCompleted,streak:userData().streak,lastVisit:userData().lastVisit},days:userData().days};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`daily-quest-${todayKey()}.json`;a.click();URL.revokeObjectURL(url);
+});
+$("deleteAccountButton").addEventListener("click",()=>{
+  if(!confirm("確定刪除這個瀏覽器裡的帳號與所有紀錄？此操作無法復原。建議先匯出備份。"))return;
+  delete appData.users[activeUser];saveDB();logout();
+});
+
+// Restore current local session if one exists.
+(function init(){
+  setAuthMode("login");
+  const key=localStorage.getItem(SESSION_KEY);
+  if(key&&appData.users[key]){activeUser=key;updateStreak();enterGame();}
+})();
+</script>
+</body>
+</html>
